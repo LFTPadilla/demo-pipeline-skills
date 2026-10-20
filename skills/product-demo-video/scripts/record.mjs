@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Record the app. One cue is one highlight. Mocks answer API calls before the page loads.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readConfig } from './lib.mjs';
@@ -156,11 +156,39 @@ try {
   const video = page.video();
   await context.close();
   await browser.close();
-  timeline.video = path.relative(project, await video.path());
+  const videoPath = await video.path();
+  timeline.video = path.relative(project, videoPath);
+  alignToVideo(timeline, videoPath, cfg.fps ?? 30);
   const start = Math.max(0, timeline.groups[0].at - 0.25);
   writeFileSync(path.join(outDir, 'timeline.json'), JSON.stringify(timeline, null, 2));
   writeFileSync(path.join(outDir, 'mux.json'), JSON.stringify({ start }, null, 2));
   console.log(`record: ${timeline.groups.length} groups, ${timeline.cues.length} cues`);
 } finally {
   server?.kill();
+}
+
+function alignToVideo(timeline, file, fps) {
+  const raw = execFileSync('ffmpeg', [
+    '-v', 'error', '-i', file, '-vf', `fps=${fps},crop=16:16:iw-16:ih-16,scale=1:1`,
+    '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-',
+  ], { maxBuffer: 1 << 28 });
+  const flips = [];
+  let last = null;
+  for (let i = 0; i < raw.length / 3; i++) {
+    const [r, g] = [raw[i * 3], raw[i * 3 + 1]];
+    const col = r > 160 && g < 110 ? 'm' : g > 160 && r < 110 ? 'c' : null;
+    if (col && col !== last) {
+      flips.push(i / fps);
+      last = col;
+    }
+  }
+  if (flips.length < timeline.cues.length) {
+    throw new Error(`saw ${flips.length} marker changes, expected ${timeline.cues.length}`);
+  }
+  const lead = timeline.cues[0].at - flips[0];
+  const shift = (t) => Math.max(0, Math.round((t - lead) * 1000) / 1000);
+  for (const group of timeline.groups) group.at = shift(group.at);
+  timeline.cues.forEach((cue, index) => { cue.at = shift(cue.at); });
+  const worst = Math.max(...timeline.cues.map((cue, index) => Math.abs(cue.at - flips[index])));
+  if (worst > 0.15) throw new Error(`video clock and page clock differ by ${Math.round(worst * 1000)} ms`);
 }

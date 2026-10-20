@@ -10,6 +10,7 @@ const cfg = readConfig(project);
 const provider = process.env.VOICE_PROVIDER ?? cfg.voice?.provider ?? 'silent';
 const voiceId = process.env.VOICE_ID ?? cfg.voice?.id ?? '';
 const lang = cfg.voice?.lang ?? 'en';
+const sttOn = cfg.stt === true;
 
 function die(message) {
   console.error(message);
@@ -57,10 +58,9 @@ function scrub(text, key) {
 
 async function elevenLabs(text, file) {
   const key = process.env.ELEVENLABS_API_KEY;
-  const header = ['xi', 'api', 'key'].join('-');
   const res = await fetch('https://api.elevenlabs.io/v1/text-to-dialogue?output_format=mp3_44100_128', {
     method: 'POST',
-    headers: { [header]: key, 'Content-Type': 'application/json' },
+    headers: { 'xi-api-key': key, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model_id: process.env.EL_MODEL ?? 'eleven_v4',
       inputs: [{ text, voice_id: voiceId }],
@@ -108,8 +108,9 @@ function level(file) {
 }
 
 async function maybeStt(file, text) {
-  if (provider === 'silent' || !process.env.DEEPGRAM_API_KEY) return 'skipped';
+  if (!sttOn) return 'skipped';
   const key = process.env.DEEPGRAM_API_KEY;
+  if (!key) die('DEEPGRAM_API_KEY is not set. stt is true. Set the key, or set stt to false.');
   const res = await fetch('https://api.deepgram.com/v1/listen?model=nova-3&punctuate=false', {
     method: 'POST',
     headers: { Authorization: `Token ${key}`, 'Content-Type': 'audio/wav' },
@@ -135,7 +136,5 @@ for (const row of lines) {
   console.log(`${row.id}  ${cues[row.id].dur.toFixed(2)}s  stt:${stt}  ${provider}`);
 }
 writeFileSync(path.join(project, 'voice', 'cues.json'), JSON.stringify({ provider, voiceId, cues }, null, 2));
-if (provider === 'silent' || !process.env.DEEPGRAM_API_KEY) {
-  console.log('speech-to-text skipped. Set DEEPGRAM_API_KEY to check the words. voice-studio can still speak with no key.');
-}
+if (!sttOn) console.log('speech-to-text off. Set "stt": true in demo.config.json to check the words.');
 if (failed) process.exit(2);

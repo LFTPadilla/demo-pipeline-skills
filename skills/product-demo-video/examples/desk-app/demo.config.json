@@ -9,9 +9,23 @@
   "accent": "#1d4ed8",
   "slideMs": 900,
   "gapMs": 350,
+  "stt": false,
   "voice": {
     "provider": "silent",
     "id": "narrator",
     "lang": "en"
+  },
+  "map": {
+    "title": "Desk flow",
+    "steps": [
+      { "id": "inbox", "label": "Inbox" },
+      { "id": "open", "label": "Open" },
+      { "id": "reply", "label": "Reply" }
+    ],
+    "scenes": {
+      "A.1": { "step": "inbox", "dock": "br" },
+      "A.2": { "step": "open", "dock": "br" },
+      "B.1": { "step": "reply", "dock": "tr" }
+    }
   }
 }

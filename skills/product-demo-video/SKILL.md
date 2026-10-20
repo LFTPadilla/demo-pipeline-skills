@@ -7,16 +7,16 @@ description: Builds a narrated product demo of a web app. It writes a narration 
 
 One narration table drives the voice, the captions, and the chapter chips.
 One cue is one sentence and one highlight.
-The highlight ring is in the recording. The captions and the chips are placed on the voice clock.
+The highlight ring is in the recording. The captions, the chapter chips, and the corner map are placed on the voice clock.
 
-This skill includes the old browser-recording flow (one clip per cue, a corner marker, a sync check) and the composition flow (chapter chips, captions, a HyperFrames `index.html`).
+This skill includes the browser-recording flow (one clip per cue, a corner marker, a sync check) and the composition flow (chapter chips, captions, a corner map, a HyperFrames `index.html`).
 
 ## Needs
 
 - Node 20 or newer, ffmpeg, ffprobe, and fontconfig (`fc-match`).
 - Playwright. Install it in the demo project with `npm install playwright`, then `npx playwright install chromium`.
 - A voice provider. See the table below. `silent` needs no key and writes placeholder audio.
-- Optional. HyperFrames, for a second render of `index.html`: `npx hyperframes skills update`.
+- HyperFrames for the default render: `npx hyperframes skills update`. `render.mjs` runs `npx --yes hyperframes@0.8.143 render`. If that command fails, it renders with ffmpeg.
 
 ## Voice providers
 
@@ -30,7 +30,9 @@ Set `voice.id`, or set `VOICE_ID`. Keys come only from the environment. The scri
 | voice-studio | `voice-studio` | Local voice profile | Free. Uses CPU or GPU and downloads a model | none |
 | Silent placeholder | `silent` | No speech | Free | none |
 
-A missing key stops the run. The error names the variable and the cheaper or free option.
+Speech-to-text is off unless `demo.config.json` has `"stt": true`. It then calls Deepgram Nova-3 pre-recorded and needs `DEEPGRAM_API_KEY`. That check is $0.0043 per minute on the public pay-as-you-go list (2026-10-20). A missing key does not run the check.
+
+A missing voice key stops the run. The error names the variable and the cheaper or free option.
 Prices change. Read the vendor pricing page before a long run.
 
 `voice.id` for Deepgram is an Aura-2 model name, for example `aura-2-thalia-en`.
@@ -64,8 +66,22 @@ node <skill>/scripts/self-check.mjs
 ```
 
 `build.mjs` runs voice, record, sync, render, and check.
-`render.mjs` is the portable renderer. It uses ffmpeg.
-`sync.mjs` also writes `index.html`. To render that file with HyperFrames, run `npx hyperframes render` in the project after you install the HyperFrames skills.
+`render.mjs` tries HyperFrames 0.8.143 first. It uses ffmpeg only when that command fails.
+`sync.mjs` writes `index.html` with the captions, the chips, and the corner map.
+
+## Corner map
+
+`map` in `demo.config.json` is optional.
+
+| Field | Meaning |
+|---|---|
+| `map.steps` | The list of steps. Each step has `id` and `label`. |
+| `map.scenes` | One entry per cue id. |
+| `scenes.<id>.step` | The step that is highlighted during that cue. |
+| `scenes.<id>.dock` | `tr`, `br`, `tl`, or `bl`. |
+| `scenes.<id>.hide` | `true` hides the map for that cue. |
+
+The map is on screen only during that cue. A missing cue entry hides the map for that cue.
 
 ## Scenario
 
