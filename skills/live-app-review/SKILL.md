@@ -10,6 +10,8 @@ The app runs on your machine. `review-proxy.py` sits in front of it. Tailscale F
 `review.py` starts and stops all of it from one `review.json`. `review.json` is the only source of settings.
 `mockup-review` builds a static mockup instead. It owns the comment layer that this skill serves.
 
+Install `mockup-review` in the folder next to this one. The proxy reads `../mockup-review`. If that folder is missing, the review page has no comment layer.
+
 ## When to use
 
 1. A reviewer must see real screens, a real API, or a real login.
