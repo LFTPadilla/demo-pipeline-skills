@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fixture home</title>
+<style>body{font:16px system-ui,sans-serif;margin:0;padding:24px}nav a{margin-right:12px}button{min-height:36px;padding:0 12px}</style></head>
+<body>
+<nav><a href="/">Home</a><a href="/orders">Orders</a><a href="/settings">Settings</a><a href="/errors">Errors</a></nav>
+<h1 id="home-title">Fixture shop</h1>
+<p id="home-text">A fictional shop. Sample data only.</p>
+<p>Signed in as <span id="me">nobody</span>. App token: <span id="token">none</span></p>
+<p><button id="load-orders">Load orders</button> <button id="create-order">Create order</button></p>
+<ul id="orders-list"></ul>
+<pre id="result"></pre>
+<div id="home-box" style="margin-top:200px;height:120px;width:50%;background:#dde">Home box</div>
+<div style="height:1200px"></div>
+<script>
+const tok = localStorage.getItem('app_token');
+document.getElementById('token').textContent = tok ? 'present' : 'none';
+const $ = id => document.getElementById(id);
+const api = (method, path, body) => fetch(path, { method, headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: body ? JSON.stringify(body) : undefined })
+  .then(async r => ({ status: r.status, body: await r.json().catch(() => null) }));
+const show = r => { $('result').textContent = r.status + ' ' + JSON.stringify(r.body); };
+api('GET', '/api/me').then(r => { if (r.status === 200) $('me').textContent = r.body.user; });
+$('load-orders').onclick = () => api('GET', '/api/orders').then(r => { $('orders-list').replaceChildren(...((r.body && r.body.orders) || []).map(o => Object.assign(document.createElement('li'), { textContent: o.id + ' ' + o.item }))); show(r); });
+$('create-order').onclick = () => api('POST', '/api/orders', { item: 'New order' }).then(show);
+</script>
+</body></html>

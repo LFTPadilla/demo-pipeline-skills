@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fixture search</title>
+<style>body{font:16px system-ui,sans-serif;margin:0;padding:24px}input{display:block;margin:8px 0;padding:6px;width:320px}</style></head>
+<body>
+<!-- Plays a Reflex or React page. It shows data only after a search. Plain el.value = x does not work here:
+     1. #client-search keeps a React-like value tracker. It reacts to an input event only when the value differs from the tracked one.
+        A plain el.value = x updates the tracker, so the input event is dropped. The state then follows the input after a 2 s debounce.
+     2. #key-search ignores input events. It reads the value on keyup, after a 2 s debounce.
+     Enter (keydown) loads the data from the state. Enter before the debounce ends finds an empty state and loads nothing. -->
+<h1 id="search-title">Partnership search</h1>
+<input id="client-search" placeholder="Search by client name and press Enter">
+<input id="key-search" placeholder="Key only search">
+<button id="brag-tab" type="button">BRAG Assessment</button>
+<div id="results"></div>
+<div id="brag-panel" hidden>BRAG panel</div>
+<script>
+const $ = id => document.getElementById(id);
+window.__log = { enter: 0, clicks: 0, mousedown: 0 };
+function search(name, state) {
+  const el = $(name);
+  el.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    window.__log.enter++;
+    if (state.v) $('results').innerHTML = '<p id="loaded">Loaded ' + state.v + '</p>';
+  });
+}
+// React-like value tracker on the instance
+const el1 = $('client-search'), desc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+let tracked = '';
+Object.defineProperty(el1, 'value', { configurable: true, get() { return desc.get.call(this); }, set(v) { tracked = String(v); desc.set.call(this, v); } });
+const s1 = { v: '' }, s2 = { v: '' };
+let t1 = 0, t2 = 0;
+el1.addEventListener('input', () => { if (el1.value === tracked) return; tracked = el1.value; clearTimeout(t1); t1 = setTimeout(() => { s1.v = el1.value; }, 2000); });
+$('key-search').addEventListener('keyup', () => { clearTimeout(t2); t2 = setTimeout(() => { s2.v = $('key-search').value; }, 2000); });
+search('client-search', s1);
+search('key-search', s2);
+$('brag-tab').addEventListener('mousedown', () => { window.__log.mousedown++; $('brag-panel').hidden = false; });
+$('brag-tab').addEventListener('click', () => { window.__log.clicks++; });
+</script>
+</body></html>

@@ -1,0 +1,70 @@
+{
+  "project": "fixture-review",
+  "title": "Fixture shop review",
+  "reviewVersion": "v1",
+  "reviewNote": "Sample data only. Do not enter real personal data.",
+  "publicHost": "demo-node.example.test",
+  "startMode": "comment",
+  "funnel": { "enabled": false, "port": 443 },
+  "proxy": { "port": 18787, "idleTimeout": 30, "upstreamTimeoutSeconds": 60, "envFile": ".fixture.env" },
+  "apps": [
+    {
+      "name": "api",
+      "command": ["python3", "fixture_app.py", "--mode", "api", "--port", "{port}"],
+      "cwd": ".",
+      "envFile": ".fixture.env",
+      "env": { "FIXTURE_STATE_DIR": ".fixture-state" },
+      "port": 18082,
+      "health": { "url": "http://127.0.0.1:{port}/health", "timeoutSeconds": 20 }
+    },
+    {
+      "name": "web",
+      "command": ["python3", "fixture_app.py", "--mode", "web", "--port", "{port}"],
+      "cwd": ".",
+      "port": 18081,
+      "health": { "url": "http://127.0.0.1:{port}/health", "timeoutSeconds": 20 }
+    }
+  ],
+  "routes": { "/": "web", "/api": "api" },
+  "session": {
+    "login": {
+      "route": "/api",
+      "method": "POST",
+      "path": "/api/login",
+      "encoding": "json",
+      "fields": { "username": "$FIXTURE_USER", "password": "$FIXTURE_PASS" }
+    },
+    "tokenField": "access_token",
+    "store": [{ "type": "localStorage", "key": "app_token", "value": "{token}" }]
+  },
+  "readOnly": true,
+  "allowWrite": [{ "method": "POST", "path": "/api/orders" }],
+  "mocks": [
+    {
+      "method": "GET",
+      "path": "/api/orders/{id}",
+      "by": "id",
+      "table": {
+        "1": { "status": 200, "json": { "id": 1, "item": "Mock widget", "source": "mock" } },
+        "2": { "status": 200, "json": { "id": 2, "item": "Mock gadget", "source": "mock" } }
+      },
+      "status": 404,
+      "json": { "detail": "mock: no such order", "source": "mock" }
+    },
+    { "method": "GET", "path": "/api/orders/special", "json": { "id": "special", "source": "mock", "note": "a literal segment beats {id}" } },
+    { "method": "POST", "path": "/api/mock-create", "status": 201, "json": { "ok": true, "source": "mock" } }
+  ],
+  "mocksFile": "mocks.json",
+  "ttl": "7d",
+  "appVersion": "abc1234",
+  "reset": { "command": ["python3", "fixture_reset.py"], "cwd": ".", "timeoutSeconds": 20 },
+  "frame": {
+    "screens": [
+      { "id": "home", "title": "Home", "src": "/", "note": "Start here. Press C to comment.",
+        "prefill": [{ "click": "#load-orders", "waitForSelector": "#orders-list li" }] },
+      { "id": "orders", "title": "Orders", "src": "/orders", "highlight": "#order-1" },
+      { "id": "settings", "title": "Settings", "src": "/settings", "note": "Saving is blocked in this review.", "highlight": "#save-settings" },
+      { "id": "errors", "title": "Errors", "src": "/errors" }
+    ]
+  }
+}

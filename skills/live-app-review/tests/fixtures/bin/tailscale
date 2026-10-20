@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Fake tailscale for tests. Put its folder first on PATH. It never touches a real tailnet.
+
+Needs FAKE_TS_DIR (a writable folder). Every call is appended to $FAKE_TS_DIR/calls.log, one line of arguments.
+Env switches: FAKE_TS_BACKEND (default Running), FAKE_TS_NO_FUNNEL=1 (node has no funnel capability), FAKE_TS_PORTS (default 443,8443,10000),
+FAKE_TS_OPERATOR=<user> (operator is set), FAKE_TS_DENY_PREFS=1 (debug prefs says access denied),
+FAKE_TS_NEED_OPERATOR=1 (funnel fails with access denied unless FAKE_TS_OPERATOR is set), FAKE_TS_FAIL_OFF=1 (funnel off fails),
+FAKE_TS_DENY_OFF=1 (funnel off fails with "Access denied", the permission case).
+"""
+import json
+import os
+import sys
+from pathlib import Path
+
+d = os.environ.get("FAKE_TS_DIR")
+if not d:
+    sys.exit("fake tailscale: set FAKE_TS_DIR")
+d = Path(d)
+args = sys.argv[1:]
+with open(d / "calls.log", "a", encoding="utf-8") as log:
+    log.write(" ".join(args) + "\n")
+funnel_file = d / "funnel.json"
+HOST = "demo-node.example.test"
+
+if args[:1] == ["version"]:
+    print("1.102.3")
+elif args[:2] == ["status", "--json"]:
+    caps = {"https": None}
+    if os.environ.get("FAKE_TS_NO_FUNNEL") != "1":
+        caps["funnel"] = None
+        caps["https://tailscale.com/cap/funnel-ports?ports=" + os.environ.get("FAKE_TS_PORTS", "443,8443,10000")] = None
+    print(json.dumps({"BackendState": os.environ.get("FAKE_TS_BACKEND", "Running"), "Self": {"DNSName": HOST + ".", "CapMap": caps}}))
+elif args[:2] == ["debug", "prefs"]:
+    if os.environ.get("FAKE_TS_DENY_PREFS") == "1":
+        sys.exit("Access denied: prefs access denied")
+    prefs = {"ControlURL": "https://controlplane.example", "ShieldsUp": False}
+    if os.environ.get("FAKE_TS_OPERATOR"):
+        prefs["OperatorUser"] = os.environ["FAKE_TS_OPERATOR"]
+    print(json.dumps(prefs))
+elif args[:1] == ["funnel"] and "status" in args[1:]:
+    print(f"https://{HOST} (Funnel on)\n|-- / proxy {json.loads(funnel_file.read_text())['target']}" if funnel_file.exists() else "No serve config")
+elif args[:1] == ["funnel"] and args[-1] == "off":
+    if os.environ.get("FAKE_TS_DENY_OFF") == "1":
+        sys.exit("Access denied: serve config denied\nUse 'sudo tailscale set --operator=$USER' to not require root.")
+    if os.environ.get("FAKE_TS_FAIL_OFF") == "1":
+        sys.exit("fake tailscale: funnel off failed")
+    funnel_file.unlink(missing_ok=True)
+elif args[:1] == ["funnel"] and "--bg" in args:
+    if os.environ.get("FAKE_TS_NEED_OPERATOR") == "1" and not os.environ.get("FAKE_TS_OPERATOR"):
+        sys.exit("Access denied: serve config denied\nUse 'sudo tailscale set --operator=$USER' to not require root.")
+    port = [a.split("=", 1)[1] for a in args if a.startswith("--https=")][0]
+    funnel_file.write_text(json.dumps({"port": int(port), "target": args[-1]}))
+    print(f"Available on the internet:\n\nhttps://{HOST}" + ("" if port == "443" else ":" + port) + "/")
+else:
+    sys.exit("fake tailscale: unexpected arguments: " + " ".join(args))

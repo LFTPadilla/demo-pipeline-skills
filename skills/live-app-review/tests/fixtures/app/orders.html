@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fixture orders</title>
+<style>body{font:16px system-ui,sans-serif;margin:0;padding:24px}nav a{margin-right:12px}pre{background:#f4f4f5;padding:8px}</style></head>
+<body>
+<nav><a href="/">Home</a><a href="/orders">Orders</a><a href="/settings">Settings</a><a href="/errors">Errors</a></nav>
+<h1 id="orders-title">Orders</h1>
+<p id="orders-text">Each box shows the JSON that the order API answered.</p>
+<pre id="order-1">loading</pre>
+<pre id="order-2">loading</pre>
+<pre id="order-9">loading</pre>
+<pre id="order-special">loading</pre>
+<script>
+for (const id of ['1', '2', '9', 'special']) {
+  fetch('/api/orders/' + id).then(r => r.text().then(t => { document.getElementById('order-' + id).textContent = r.status + ' ' + t; }));
+}
+</script>
+</body></html>

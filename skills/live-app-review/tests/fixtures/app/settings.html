@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fixture settings</title>
+<style>body{font:16px system-ui,sans-serif;margin:0;padding:24px}nav a{margin-right:12px}button{min-height:36px;padding:0 12px}</style></head>
+<body>
+<nav><a href="/">Home</a><a href="/orders">Orders</a><a href="/settings">Settings</a><a href="/errors">Errors</a></nav>
+<h1 id="settings-title">Settings</h1>
+<p id="settings-text">The save button sends a POST. A read-only review blocks it.</p>
+<div id="highlight-me" style="padding:12px;background:#fef3c7">Theme: light</div>
+<p><button id="save-settings">Save settings</button></p>
+<pre id="result"></pre>
+<script>
+document.getElementById('save-settings').onclick = () => fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ theme: 'dark' }) })
+  .then(r => r.text().then(t => { document.getElementById('result').textContent = r.status + ' ' + t; }));
+</script>
+</body></html>

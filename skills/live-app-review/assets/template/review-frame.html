@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>App review</title>
+<!-- Review wrapper for a RUNNING app. scripts/review-proxy.py serves this file at /__review/
+     and serves the app at every other path, so the iframe and this page share one origin.
+     The comment layer is not in this file. The proxy serves it at /__review/layer.css and /__review/layer.js. -->
+<style>
+html,body{height:100%;margin:0;overflow:hidden;background:#fff}
+body{display:flex;flex-direction:column}
+#cmt-frame{flex:1;width:100%;min-height:0;border:0;background:#fff}
+</style>
+<link rel="stylesheet" href="layer.css">
+<script type="application/json" id="cmt-config">
+{
+  "project": "my-app-review",
+  "title": "My app review",
+  "version": "v1",
+  "reviewNote": "Staging data only. Do not enter real personal data.",
+  "apiBase": "/__review/api/comments",
+  "frame": {
+    "screens": [
+      { "id": "home", "title": "Home", "src": "/" },
+      { "id": "settings", "title": "Settings", "src": "/settings" }
+    ]
+  }
+}
+</script>
+</head>
+<body>
+<iframe id="cmt-frame" title="App under review"></iframe>
+<script>
+// Optional auto-login. review-proxy.py logs in to the app on the server and answers {store:[{type,key,value}]}.
+// This page writes the values into its own storage, which the same-origin iframe shares. Then the layer loads the app.
+// The proxy renews its login when the app token expires. This page asks again every 4 minutes and on window focus.
+// Without a session block in review.json the proxy sets session:false in cmt-config, and this page never calls /__review/session.
+var cmtCfg = {};
+try { cmtCfg = JSON.parse(document.getElementById('cmt-config').textContent); } catch (e) { /* no config */ }
+function cmtLogin() {
+  if (cmtCfg.session === false) return Promise.resolve();   // an older proxy sends no flag: then ask, as before
+  return fetch('./session', { credentials: 'same-origin', cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) {
+      ((j && j.store) || []).forEach(function (s) {
+        try {
+          if (s.type === 'localStorage') localStorage.setItem(s.key, s.value);
+          else if (s.type === 'sessionStorage') sessionStorage.setItem(s.key, s.value);
+          else if (s.type === 'cookie') document.cookie = s.key + '=' + s.value + '; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+        } catch (e) { /* storage blocked: the app shows its login page */ }
+      });
+    })
+    .catch(function () { /* no session endpoint */ });
+}
+window.cmtFrameReady = cmtLogin();
+setInterval(cmtLogin, 240000);
+addEventListener('focus', cmtLogin);
+</script>
+<script src="layer.js"></script>
+</body>
+</html>
