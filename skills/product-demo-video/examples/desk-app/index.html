@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1280, height=720" />
+    <title>Desk</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      body { margin: 0; background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; }
+      #root { position: relative; width: 1280px; height: 720px; overflow: hidden; background: #0f172a; }
+      video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .chip, .caption { position: absolute; opacity: 0; }
+      .chip { top: 20px; left: 50%; transform: translateX(-50%); padding: 8px 14px; border-radius: 8px; background: #0f172acc; color: #f8fafc; font-size: 18px; font-weight: 700; letter-spacing: 0.08em; }
+      .caption { left: 48px; right: 160px; bottom: 36px; padding: 12px 16px; border-radius: 10px; background: #0f172af2; color: #f8fafc; font-size: 28px; font-weight: 650; }
+      .chip i, .caption i { color: #1d4ed8; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1280" data-height="720" data-duration="15.629">
+      <video id="ui" class="clip" src="out/ui.mp4" muted playsinline data-start="0" data-duration="15.629" data-track-index="0"></video>
+      <div id="chip-A" class="chip">01  Inbox</div>
+      <div id="chip-B" class="chip">02  Reply</div>
+      <div id="cap-A1" class="caption">Every task shows a priority, so urgent work stands out.</div>
+      <div id="cap-A2" class="caption">Open a task to read the full note.</div>
+      <div id="cap-B1" class="caption">Write a reply, then send it from this screen.</div>
+      <audio id="vo-A1" src="voice/audio/A.1.wav" data-start="1.349" data-duration="4.2" data-track-index="1" data-volume="1"></audio>
+      <audio id="vo-A2" src="voice/audio/A.2.wav" data-start="6.245" data-duration="3.36" data-track-index="2" data-volume="1"></audio>
+      <audio id="vo-B1" src="voice/audio/B.1.wav" data-start="11.349" data-duration="3.78" data-track-index="3" data-volume="1"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.set("#chip-A", { opacity: 1 }, 0.078);
+      tl.set("#chip-A", { opacity: 0 }, 10.059);
+      tl.set("#chip-B", { opacity: 1 }, 10.059);
+      tl.set("#chip-B", { opacity: 0 }, 15.529);
+      tl.set("#cap-A1", { opacity: 1 }, 1.349);
+      tl.set("#cap-A1", { opacity: 0 }, 5.549);
+      tl.set("#cap-A2", { opacity: 1 }, 6.245);
+      tl.set("#cap-A2", { opacity: 0 }, 9.605);
+      tl.set("#cap-B1", { opacity: 1 }, 11.349);
+      tl.set("#cap-B1", { opacity: 0 }, 15.129);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

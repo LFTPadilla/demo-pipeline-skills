@@ -1,0 +1,17 @@
+{
+  "name": "desk-demo",
+  "title": "Desk",
+  "base": "http://127.0.0.1:47331",
+  "port": 47331,
+  "serve": "app/server.mjs",
+  "viewport": { "width": 1280, "height": 720 },
+  "fps": 30,
+  "accent": "#1d4ed8",
+  "slideMs": 900,
+  "gapMs": 350,
+  "voice": {
+    "provider": "silent",
+    "id": "narrator",
+    "lang": "en"
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Desk</title>
+    <style>
+      body { margin: 0; font: 16px/1.4 system-ui, sans-serif; background: #f4f6f8; color: #142033; }
+      header { background: #142033; color: #fff; padding: 16px 24px; font-weight: 700; }
+      table { width: 100%; border-collapse: collapse; background: #fff; }
+      th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid #e4e8ee; }
+      #col-priority { color: #1d4ed8; }
+      button { background: #1d4ed8; color: #fff; border: 0; border-radius: 8px; padding: 8px 14px; }
+      #detail { display: none; padding: 24px; max-width: 720px; }
+      #reply { display: block; width: 100%; min-height: 120px; margin: 8px 0 16px; }
+    </style>
+  </head>
+  <body>
+    <header>Desk</header>
+    <main id="list">
+      <table>
+        <thead>
+          <tr><th>Task</th><th id="col-priority">Priority</th><th></th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </main>
+    <section id="detail">
+      <h1 id="task-title"></h1>
+      <p id="task-body"></p>
+      <label>Reply <textarea id="reply"></textarea></label>
+      <button id="send" type="button">Send</button>
+    </section>
+    <script>
+      async function load() {
+        const tasks = await (await fetch('/api/tasks')).json();
+        const body = document.getElementById('rows');
+        for (const task of tasks) {
+          const row = document.createElement('tr');
+          const name = document.createElement('td');
+          name.textContent = task.title;
+          const priority = document.createElement('td');
+          priority.textContent = task.priority;
+          const action = document.createElement('td');
+          const button = document.createElement('button');
+          button.id = 'open-' + task.id;
+          button.type = 'button';
+          button.textContent = 'Open';
+          button.addEventListener('click', () => show(task));
+          action.append(button);
+          row.append(name, priority, action);
+          body.append(row);
+        }
+      }
+      function show(task) {
+        document.getElementById('list').hidden = true;
+        const detail = document.getElementById('detail');
+        detail.style.display = 'block';
+        document.getElementById('task-title').textContent = task.title;
+        document.getElementById('task-body').textContent = task.body;
+      }
+      load();
+    </script>
+  </body>
+</html>
