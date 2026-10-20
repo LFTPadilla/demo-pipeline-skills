@@ -1,11 +1,26 @@
 ---
 name: voice-studio
-description: Use when the user requests spoken voice responses, audio generation, speech synthesis, speaking directly to the user, or expressive speech playback through VoiceStudio
+description: Speaks demo narration and short lines on this machine through VoiceStudio. Use for a product-demo voice track, a local read-aloud, or expressive speech when you do not want a paid voice API.
 ---
 
 # VoiceStudio
 
-Synthesize spoken audio responses and play expressive speech locally via GPU.
+Speak a narration line or a short reply on this machine. No API key. The app uses CPU or GPU and a downloaded model.
+
+## Install and start
+
+This folder does not install VoiceStudio. A machine with only this pack cannot speak.
+
+1. Install the VoiceStudio desktop app from `https://github.com/debpalash/VoiceStudio`.
+2. Start the app. It listens on `http://127.0.0.1:3900`. The first start downloads a model.
+3. Put `scripts/vsay.sh` on your `PATH` as `vsay`, or call that script by its path.
+4. Check the server:
+
+```bash
+curl -s http://127.0.0.1:3900/health
+```
+
+The `device` field names the CPU or GPU that will run the model. A missing server means the app is not running. Start the app again, then run the check.
 
 ## Usage
 
@@ -41,10 +56,12 @@ Embed bracketed tokens for vocal inflections:
 2. Use punctuation marks (!, ?, ¡, ¿) to shape expressive pitch contours.
 3. Place commas before conjunctions to induce realistic pitch dips.
 
-## Health Check
+## Narration
+
+For a demo, write one short sentence per line. Call `vsay` with `--no-play` and `-o` so the clip is a file, not playback.
 
 ```bash
-curl -s http://127.0.0.1:3900/health
+vsay --no-play -l en -v narrator -N 16 -s 1.0 -o line.wav "Every task shows a priority."
 ```
 
-The `device` field names the CPU or GPU that will run the model. A missing server means VoiceStudio is not running.
+`product-demo-video` calls `vsay` the same way when `voice.provider` is `voice-studio`.
