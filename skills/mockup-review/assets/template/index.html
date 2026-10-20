@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototype</title>
+<!-- Self-contained prototype: no external scripts, fonts or images. Sample data only. -->
+<style>
+/* PROTOTYPE STYLES: replace freely. The review layer does not depend on them. */
+body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1f2937;background:#f8fafc}
+main{max-width:960px;margin:0 auto;padding:24px 16px 120px}
+h1{margin:0 0 4px;font-size:28px}
+.lead{margin:0 0 24px;color:#64748b}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.card{padding:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+.card b{display:block;font-size:28px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e2e8f0}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #e2e8f0}
+button.primary{padding:10px 16px;border:0;border-radius:8px;background:#0f766e;color:#fff;font:inherit}
+label{display:block;margin:12px 0 4px;font-weight:600}
+input,select{width:100%;max-width:360px;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font:inherit}
+</style>
+<script type="application/json" id="cmt-config">
+{ "project": "my-prototype", "title": "My prototype", "version": "v1", "reviewNote": "Sample data only. Nothing on this page is real." }
+</script>
+</head>
+<body>
+<!-- proto:begin  WRITE SCREENS HERE.
+     One <section data-screen="id" data-title="Tab title"> per screen.
+     With more than one screen, the layer adds a tab bar and keeps the screen in the URL hash (#screen=id).
+     With no data-screen section, the whole page is one screen. Give stable elements an id so comments survive edits. -->
+<main>
+  <section data-screen="overview" data-title="Overview">
+    <h1 id="overview-title">Overview</h1>
+    <p class="lead">Short sentence that says what this screen is for.</p>
+    <div class="cards">
+      <div class="card">Open items <b>12</b></div>
+      <div class="card">Done this week <b>34</b></div>
+      <div class="card">Average time <b>2.4 days</b></div>
+    </div>
+    <table>
+      <thead><tr><th>Name</th><th>Status</th><th>Owner</th></tr></thead>
+      <tbody>
+        <tr><td>Sample item A</td><td>Open</td><td>Person 1</td></tr>
+        <tr><td>Sample item B</td><td>Done</td><td>Person 2</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section data-screen="details" data-title="Details">
+    <h1 id="details-title">Details</h1>
+    <p class="lead">Second screen. Delete it when the prototype needs only one.</p>
+    <form onsubmit="return false">
+      <label for="f-name">Name</label><input id="f-name" value="Sample item A">
+      <label for="f-status">Status</label><select id="f-status"><option>Open</option><option>Done</option></select>
+      <p><button class="primary" type="button">Save changes</button></p>
+    </form>
+  </section>
+</main>
+<!-- proto:end -->
+
+<!-- cmt:layer -->
+</body>
+</html>

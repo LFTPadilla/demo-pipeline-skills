@@ -1,0 +1,15 @@
+// Rendered by scripts/deploy.sh. Placeholders: __NAME__, __KV_ID__, __DATE__.
+// Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#assets
+//       https://developers.cloudflare.com/workers/static-assets/routing/worker-script/
+{
+  "name": "__NAME__",
+  "main": "worker.js",
+  "compatibility_date": "__DATE__",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // Only /api/* runs the Worker. Every other path is served as a static asset.
+    "run_worker_first": ["/api/*"]
+  },
+  "kv_namespaces": [{ "binding": "COMMENTS", "id": "__KV_ID__" }]
+}
