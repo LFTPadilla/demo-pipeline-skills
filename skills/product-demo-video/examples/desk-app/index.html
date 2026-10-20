@@ -8,7 +8,7 @@
     <style>
       body { margin: 0; background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; }
       #root { position: relative; width: 1280px; height: 720px; overflow: hidden; background: #0f172a; }
-      video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      video { position: absolute; left: 0; top: 0; width: 1356px; height: 763px; }
       .chip, .caption, #map-dock { position: absolute; }
       .chip, .caption { opacity: 0; }
       .chip { top: 16px; left: 50%; transform: translateX(-50%); padding: 8px 14px; border-radius: 8px; background: #0f172acc; color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; }
@@ -17,12 +17,12 @@
       #map-panel { background: rgba(15, 23, 42, 0.94); border-radius: 12px; padding: 10px 12px 8px; }
       .map-title { font-size: 12px; letter-spacing: 0.08em; font-weight: 700; color: #94a3b8; margin-bottom: 6px; }
       .step { display: flex; align-items: center; gap: 8px; height: 26px; font-size: 16px; font-weight: 750; color: #94a3b8; white-space: nowrap; }
-      .step i { font-style: normal; width: 16px; color: #1d4ed8; }
+      .step i { font-style: normal; width: 16px; color: #94a3b8; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-width="1280" data-height="720" data-duration="15.261">
-      <video id="ui" class="clip" src="out/ui.mp4" muted playsinline data-start="0" data-duration="15.261" data-track-index="0"></video>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1280" data-height="720" data-duration="15.293">
+      <video id="ui" class="clip" src="out/ui.mp4" muted playsinline data-start="0" data-duration="15.293" data-track-index="0"></video>
       <div id="chip-A" class="chip">01  Inbox</div>
       <div id="chip-B" class="chip">02  Reply</div>
       <div id="cap-A1" class="caption">Every task shows a priority, so urgent work stands out.</div>
@@ -36,47 +36,38 @@
       <div class="step" id="step-reply"><i>3</i><span>Reply</span></div>
       </div>
     </div>
-      <audio id="vo-A1" src="voice/audio/A.1.wav" data-start="1.2" data-duration="4.2" data-track-index="1" data-volume="1"></audio>
-      <audio id="vo-A2" src="voice/audio/A.2.wav" data-start="5.96" data-duration="3.36" data-track-index="2" data-volume="1"></audio>
-      <audio id="vo-B1" src="voice/audio/B.1.wav" data-start="10.981" data-duration="3.78" data-track-index="3" data-volume="1"></audio>
+      <audio id="vo-A1" src="voice/audio/A.1.wav" data-start="1.233" data-duration="4.2" data-track-index="1" data-volume="1"></audio>
+      <audio id="vo-A2" src="voice/audio/A.2.wav" data-start="5.993" data-duration="3.36" data-track-index="2" data-volume="1"></audio>
+      <audio id="vo-B1" src="voice/audio/B.1.wav" data-start="11.013" data-duration="3.78" data-track-index="3" data-volume="1"></audio>
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });
       tl.set("#chip-A", { opacity: 1 }, 0);
-      tl.set("#chip-A", { opacity: 0 }, 9.732);
-      tl.set("#chip-B", { opacity: 1 }, 9.732);
-      tl.set("#chip-B", { opacity: 0 }, 15.161);
-      tl.set("#cap-A1", { opacity: 1 }, 1.2);
-      tl.set("#cap-A1", { opacity: 0 }, 5.4);
-      tl.set("#cap-A2", { opacity: 1 }, 5.96);
-      tl.set("#cap-A2", { opacity: 0 }, 9.32);
-      tl.set("#cap-B1", { opacity: 1 }, 10.981);
-      tl.set("#cap-B1", { opacity: 0 }, 14.761);
+      tl.set("#chip-A", { opacity: 0 }, 9.761);
+      tl.set("#chip-B", { opacity: 1 }, 9.761);
+      tl.set("#chip-B", { opacity: 0 }, 15.193);
+      tl.set("#cap-A1", { opacity: 1 }, 1.233);
+      tl.set("#cap-A1", { opacity: 0 }, 5.433);
+      tl.set("#cap-A2", { opacity: 1 }, 5.993);
+      tl.set("#cap-A2", { opacity: 0 }, 9.353);
+      tl.set("#cap-B1", { opacity: 1 }, 11.013);
+      tl.set("#cap-B1", { opacity: 0 }, 14.793);
       tl.set("#map-dock", { opacity: 0 }, 0);
-      tl.set("#map-dock", { x: 1024, y: 566, opacity: 1 }, 1.2);
-      tl.set("#step-inbox", { opacity: 1 }, 1.2);
-      tl.set("#step-inbox span", { color: "#f8fafc" }, 1.2);
-      tl.set("#step-open", { opacity: 0.4 }, 1.2);
-      tl.set("#step-open span", { color: "#94a3b8" }, 1.2);
-      tl.set("#step-reply", { opacity: 0.4 }, 1.2);
-      tl.set("#step-reply span", { color: "#94a3b8" }, 1.2);
-      tl.set("#map-dock", { opacity: 0 }, 5.4);
-      tl.set("#map-dock", { x: 1024, y: 566, opacity: 1 }, 5.96);
-      tl.set("#step-inbox", { opacity: 0.4 }, 5.96);
-      tl.set("#step-inbox span", { color: "#94a3b8" }, 5.96);
-      tl.set("#step-open", { opacity: 1 }, 5.96);
-      tl.set("#step-open span", { color: "#f8fafc" }, 5.96);
-      tl.set("#step-reply", { opacity: 0.4 }, 5.96);
-      tl.set("#step-reply span", { color: "#94a3b8" }, 5.96);
-      tl.set("#map-dock", { opacity: 0 }, 9.32);
-      tl.set("#map-dock", { x: 1024, y: 16, opacity: 1 }, 10.981);
-      tl.set("#step-inbox", { opacity: 0.4 }, 10.981);
-      tl.set("#step-inbox span", { color: "#94a3b8" }, 10.981);
-      tl.set("#step-open", { opacity: 0.4 }, 10.981);
-      tl.set("#step-open span", { color: "#94a3b8" }, 10.981);
-      tl.set("#step-reply", { opacity: 1 }, 10.981);
-      tl.set("#step-reply span", { color: "#f8fafc" }, 10.981);
-      tl.set("#map-dock", { opacity: 0 }, 14.761);
+      tl.set("#map-dock", { x: 1024, y: 566, opacity: 1 }, 1.233);
+      tl.set("#step-inbox i, #step-inbox span", { color: "#f8fafc" }, 1.233);
+      tl.set("#step-open i, #step-open span", { color: "#94a3b8" }, 1.233);
+      tl.set("#step-reply i, #step-reply span", { color: "#94a3b8" }, 1.233);
+      tl.set("#map-dock", { opacity: 0 }, 5.433);
+      tl.set("#map-dock", { x: 1024, y: 566, opacity: 1 }, 5.993);
+      tl.set("#step-inbox i, #step-inbox span", { color: "#94a3b8" }, 5.993);
+      tl.set("#step-open i, #step-open span", { color: "#f8fafc" }, 5.993);
+      tl.set("#step-reply i, #step-reply span", { color: "#94a3b8" }, 5.993);
+      tl.set("#map-dock", { opacity: 0 }, 9.353);
+      tl.set("#map-dock", { x: 1024, y: 16, opacity: 1 }, 11.013);
+      tl.set("#step-inbox i, #step-inbox span", { color: "#94a3b8" }, 11.013);
+      tl.set("#step-open i, #step-open span", { color: "#94a3b8" }, 11.013);
+      tl.set("#step-reply i, #step-reply span", { color: "#f8fafc" }, 11.013);
+      tl.set("#map-dock", { opacity: 0 }, 14.793);
       window.__timelines["main"] = tl;
     </script>
   </body>

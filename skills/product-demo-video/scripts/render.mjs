@@ -56,7 +56,7 @@ function ffmpegRender() {
   const mix = timing.cues.map((_, index) => `[a${index}]`).join('') + `amix=inputs=${timing.cues.length}:normalize=0:duration=longest[aout]`;
   args.push(
     '-filter_complex', `${delays.join(';')};${mix}`,
-    '-vf', filters.join(','),
+    '-vf', `crop=iw-40:ih-40:0:0,scale=${timing.width}:${timing.height},${filters.join(',')}`,
     '-map', '0:v', '-map', '[aout]',
     '-r', String(fps), '-c:v', 'libx264', '-crf', '16', '-preset', 'veryfast', '-pix_fmt', 'yuv420p',
     '-c:a', 'aac', '-ar', '48000', '-t', String(timing.total), outPath,

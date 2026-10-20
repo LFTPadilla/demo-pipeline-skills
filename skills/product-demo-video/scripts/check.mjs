@@ -15,7 +15,8 @@ const limit = Number(process.env.MAX_OFFSET_MS ?? 150);
 const duration = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString());
 const bytes = statSync(file).size;
 
-const raw = execFileSync('ffmpeg', ['-v', 'error', '-i', file, '-vf', `fps=${fps},crop=16:16:iw-16:ih-16,scale=1:1`, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], { maxBuffer: 1 << 28 });
+const markerFile = path.join(project, 'out', 'ui.mp4');
+const raw = execFileSync('ffmpeg', ['-v', 'error', '-i', markerFile, '-vf', `fps=${fps},crop=16:16:iw-16:ih-16,scale=1:1`, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], { maxBuffer: 1 << 28 });
 const flips = [];
 let last = null;
 for (let i = 0; i < raw.length / 3; i++) {

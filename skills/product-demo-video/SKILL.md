@@ -116,7 +116,7 @@ export default {
 
 `check.mjs` prints the duration and the file size. It also:
 
-1. Reads the corner marker in the MP4 and compares it to each line start. The limit is 150 ms (`MAX_OFFSET_MS`).
+1. Reads the corner marker in `out/ui.mp4` and compares it to each line start. The rendered MP4 crops that corner away. The limit is 150 ms (`MAX_OFFSET_MS`).
 2. Measures loudness when the provider is not `silent`. The target is -16 LUFS.
 3. Writes one JPEG per chapter in `out/stills/`.
 4. Scans the project text for a pasted key. A hit fails the check.

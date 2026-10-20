@@ -12,6 +12,7 @@ const narration = loadNarration(project);
 const byId = Object.fromEntries(narration.map((row) => [row.id, row]));
 const width = cfg.viewport?.width ?? 1280;
 const height = cfg.viewport?.height ?? 720;
+const zoom = height / (height - 40);
 const accent = cfg.accent ?? '#1d4ed8';
 const round = (n) => Math.round(n * 1000) / 1000;
 
@@ -66,7 +67,7 @@ const html = `<!doctype html>
     <style>
       body { margin: 0; background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; }
       #root { position: relative; width: ${width}px; height: ${height}px; overflow: hidden; background: #0f172a; }
-      video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      video { position: absolute; left: 0; top: 0; width: ${Math.ceil(width * zoom)}px; height: ${Math.ceil(height * zoom)}px; }
       .chip, .caption, #map-dock { position: absolute; }
       .chip, .caption { opacity: 0; }
       .chip { top: 16px; left: 50%; transform: translateX(-50%); padding: 8px 14px; border-radius: 8px; background: #0f172acc; color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; }
@@ -75,7 +76,7 @@ const html = `<!doctype html>
       #map-panel { background: rgba(15, 23, 42, 0.94); border-radius: 12px; padding: 10px 12px 8px; }
       .map-title { font-size: 12px; letter-spacing: 0.08em; font-weight: 700; color: #94a3b8; margin-bottom: 6px; }
       .step { display: flex; align-items: center; gap: 8px; height: 26px; font-size: 16px; font-weight: 750; color: #94a3b8; white-space: nowrap; }
-      .step i { font-style: normal; width: 16px; color: ${accent}; }
+      .step i { font-style: normal; width: 16px; color: #94a3b8; }
     </style>
   </head>
   <body>
@@ -148,8 +149,7 @@ function mapTweens(plan) {
     lines.push(`      tl.set("#map-dock", { x: ${scene.x}, y: ${scene.y}, opacity: ${scene.hide ? 0 : 1} }, ${scene.at});`);
     for (const step of plan.steps) {
       const on = step.id === scene.step && !scene.hide;
-      lines.push(`      tl.set("#step-${step.id}", { opacity: ${on ? 1 : 0.4} }, ${scene.at});`);
-      lines.push(`      tl.set("#step-${step.id} span", { color: "${on ? '#f8fafc' : '#94a3b8'}" }, ${scene.at});`);
+      lines.push(`      tl.set("#step-${step.id} i, #step-${step.id} span", { color: "${on ? '#f8fafc' : '#94a3b8'}" }, ${scene.at});`);
     }
     lines.push(`      tl.set("#map-dock", { opacity: 0 }, ${scene.end});`);
   }
