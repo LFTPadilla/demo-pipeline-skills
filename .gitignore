@@ -1,0 +1,11 @@
+.briefs/
+node_modules/
+dist/
+out/
+voice/
+composition/
+*.mp4
+*.webm
+.review/
+__pycache__/
+.ruff_cache/
