@@ -114,6 +114,8 @@ try {
   const t0 = Date.now();
   const now = () => (Date.now() - t0) / 1000;
   const timeline = { groups: [], cues: [], video: '' };
+  // A target can sit in an iframe. Its ring is drawn in that frame, so clear rings in every frame.
+  const clearRings = () => Promise.all(page.frames().map((frame) => frame.evaluate(() => window.__demo?.ring(null)).catch(() => {})));
   let flip = 0;
   const slideMs = cfg.slideMs ?? 900;
   const gapMs = cfg.gapMs ?? 350;
@@ -140,18 +142,20 @@ try {
         box = await target.boundingBox();
       }
       const color = flip++ % 2 ? '#ff00ff' : '#00ffff';
-      if (target) await target.evaluate((node, fill) => { __demo.ring(node); __demo.marker(fill); }, color);
-      else await page.evaluate((fill) => { __demo.ring(null); __demo.marker(fill); }, color);
+      await clearRings();
+      if (target) await target.evaluate((node) => __demo.ring(node));
+      // The marker always goes on the top page, so the corner check sees it.
+      await page.evaluate((fill) => __demo.marker(fill), color);
       const at = now();
       timeline.cues.push({ id, at, dur: spoken.dur, file: spoken.file, ring: Boolean(target), box });
       await page.waitForTimeout(Math.max(0, (at + spoken.dur) * 1000 + gapMs - (Date.now() - t0)));
       if (cue.action === 'click' && target) {
-        await page.evaluate(() => __demo.ring(null));
+        await clearRings();
         await target.click();
       }
       await cue.after?.(page, cfg.base);
     }
-    await page.evaluate(() => __demo.ring(null));
+    await clearRings();
   }
   const video = page.video();
   await context.close();
