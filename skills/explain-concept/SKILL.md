@@ -1,6 +1,6 @@
 ---
 name: explain-concept
-description: Routes a "make this understandable" request to one medium. The medium is a PNG diagram, a draw.io file when that tool is available, a narrated explainer video, or a text trail of file:line stops. Use when someone must understand a ticket, a bug, an architecture, or a data flow and the medium is not chosen yet.
+description: Routes a "make this understandable" request to one medium. The medium is an archify diagram when that skill is installed, a PNG diagram, a draw.io file when that tool is available, a narrated explainer video, or a text trail of file:line stops. Use when someone must understand a ticket, a bug, an architecture, or a data flow and the medium is not chosen yet.
 ---
 
 # Explain concept
@@ -29,6 +29,7 @@ If the request already names an audience and a medium, skip the question.
 
 | Signal in the request | Route to | Output |
 |---|---|---|
+| Architecture, workflow, sequence, data flow, or state machine, and the `archify` skill is installed | `archify` | HTML with SVG, plus PNG, SVG, or WebM export |
 | Quick topology, flow, or architecture picture; paste into chat or a PR | `diagram-render` | PNG |
 | The reader must edit it, restyle it, or export SVG or PDF | draw.io, if you have that tool | `.drawio` plus an export |
 | Narrated walkthrough, async share, non-technical audience, onboarding | `explainer-video` | `videos/<slug>/renders/video.mp4` |
@@ -36,7 +37,8 @@ If the request already names an audience and a medium, skip the question.
 
 Rules for the routes:
 
-- **diagram-render** — the picture is static and the reader only looks at it.
+- **archify** — the first choice for a diagram when it is installed. It validates the layout and exports a trace animation as WebM, which drops into a demo video. This pack does not include it. Install it with `npx skills add tt-a1i/archify -g`.
+- **diagram-render** — the fallback when archify is not installed. The picture is static and the reader only looks at it.
 - **draw.io** — the picture has a second life: somebody changes it later. This pack does not include a draw.io skill. If you have one, use it. If you do not, write the boxes and the arrows as a list.
 - **explainer-video** — timing matters. The reader needs the order of events
   spoken, not inferred. Example: a webhook race bug where two handlers write the

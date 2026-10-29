@@ -36,6 +36,7 @@ Run the commands in this file from the repo root.
 | Tailscale | `live-app-review`, only when you share a public link |
 | Wrangler (`npx wrangler`) | `mockup-review`, only when you deploy |
 | VoiceStudio app | `voice-studio` and the free demo voice. Not included in this pack |
+| archify skill (optional) | `explain-concept` uses it first for diagrams when it is installed. Install with `npx skills add tt-a1i/archify -g`. Not included in this pack |
 
 ## Install
 
